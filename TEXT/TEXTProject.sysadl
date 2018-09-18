@@ -15,29 +15,47 @@ package SysADL.types {
 }
 package Ports {
 	import SysADL.types;
-	port def RecebeFileIPT {
-		flow in String
-	}
+	
 	port def SaiTextoOPT {
 		flow out String
 	}
-	port def EntraTextoIPT {
+	
+port def FileOPT {
 		flow in File
+	}
+	
+	port def RecebeFileIPT {
+		flow in File
+	}
+	port def TextoIPT {
+		flow in String
 	}
 }
 package Connector {
 	import Ports;
 }
-package Components {
-	import Connector;
-	boundary component def RecebeArquivoCP {
+
+package  Components {
+	import Ports;
+	component def ReceiveFileCP {
+		ports:
+		p0 : FileOPT;
 	}
-	component def ProcessaArquivo {
+	component def ProcessFileCP {
+		ports:
+		p2 : SaiTextoOPT;
+		p1 : RecebeFileIPT;
 	}
-	boundary component def ExibeSaida {
+	component def ShowTextCP {
+		ports:
+		p3 : TextoIPT;
 	}
 	component def Sistema {
 		configuration {
+			components:
+			ReceiveFileCP : ReceiveFileCP;
+			ProcessFileCP : ProcessFileCP;
+			ShowTextCP : ShowTextCP;
 		}
 	}
 }
