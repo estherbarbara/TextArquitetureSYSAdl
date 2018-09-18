@@ -1,0 +1,65 @@
+Model SysADLArchitecture;
+package SysADL.types {
+	value type Int {
+	}
+	value type Boolean {
+	}
+	value type String {
+	}
+	value type Void {
+	}
+	value type Real {
+	}
+	datatype File {
+	}
+}
+package Ports {
+	import SysADL.types;
+	port def RecebeFileIPT {
+		flow in String
+	}
+	port def SaiTextoOPT {
+		flow out String
+	}
+	port def EntraTextoIPT {
+		flow in File
+	}
+}
+package Connector {
+	import Ports;
+}
+package Components {
+	import Connector;
+	boundary component def RecebeArquivoCP {
+	}
+	component def ProcessaArquivo {
+	}
+	boundary component def ExibeSaida {
+	}
+	component def Sistema {
+		configuration {
+		}
+	}
+}
+Requirement AnalisarPalavras ( 1 ) {
+	Requirement Filtrar ( 4 ) {
+		Requirement OrdenarPalavras ( 6 ) {
+			Requirement OrdenaPorLetras ( 10 ) {
+			}
+			Requirement OrdenaPorSequeciaLetras ( 9 ) {
+			}
+		}
+		Requirement SeparaPalavras ( 5 ) {
+		}
+	}
+Requirement ExibeAoUsuario ( 3 ) {
+}
+Requirement LeTexto ( 2 ) {
+}
+}
+Requirement OrdenaAscendente ( 7 ) {
+	derive AnalisarPalavras.Filtrar.OrdenarPalavras;
+}
+Requirement OrdenaDescendente ( 8 ) {
+	derive AnalisarPalavras.Filtrar.OrdenarPalavras;
+}
