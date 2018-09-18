@@ -8,59 +8,93 @@ package SysADL.types {
 	}
 	value type Void {
 	}
-	value type Real {
-	}
+	
 	datatype File {
 	}
 }
 package Ports {
 	import SysADL.types;
 	
-	port def SaiTextoOPT {
+	port def SendTextOPT {
 		flow out String
 	}
 	
-port def FileOPT {
+port def SendFileOPT {
 		flow in File
 	}
 	
-	port def RecebeFileIPT {
+	port def ReceiveFileIPT {
 		flow in File
 	}
-	port def TextoIPT {
+	port def ReceiveTextIPT {
 		flow in String
 	}
 }
 package Connector {
 	import Ports;
+connector def FileCN {
+		participants:
+		~p0 : SendFileOPT;
+		~p1 : ReceiveFileIPT;
+		flows:
+		File from p0 to p1
+	}
+	connector def TextCN {
+		participants:
+		~p2 : SendTextOPT;
+		~p3 : ReceiveTextIPT;
+		flows:
+		String from p2 to p3 connector def newElement {
+		}
+	}
 }
 
 package  Components {
 	import Ports;
-	component def ReceiveFileCP {
-		ports:
-		p0 : FileOPT;
-	}
+	import Connector;
 	component def ProcessFileCP {
 		ports:
-		p2 : SaiTextoOPT;
-		p1 : RecebeFileIPT;
+		p2 : SendTextOPT;
+		p1 : ReceiveFileIPT;
+		configuration {
+		}
 	}
-	component def ShowTextCP {
+	boundary component def ShowTextCP {
 		ports:
-		p3 : TextoIPT;
+		p3 : ReceiveTextIPT;
 	}
-	component def Sistema {
+	boundary component def ReceiveFileCP {
+		ports:
+		p0 : SendFileOPT;
+	}
+	component def system {
 		configuration {
 			components:
-			ReceiveFileCP : ReceiveFileCP;
-			ProcessFileCP : ProcessFileCP;
-			ShowTextCP : ShowTextCP;
+			ReceiveFileCP : ReceiveFileCP {
+				using
+				ports:
+				p0 : SendFileOPT;
+			}
+			ProcessFileCP : ProcessFileCP {
+				using
+				ports:
+				p2 : SendTextOPT;
+				p1 : ReceiveFileIPT;
+			}
+			ShowTextCP : ShowTextCP {
+				using
+				ports:
+				p3 : ReceiveTextIPT;
+			}
+			connectors:
+			File : FileCN bindings p1 = p0;
+			Text : TextCN bindings p2 = p3;
 		}
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
 	Requirement Filtrar ( 4 ) {
+		satisfied by Components.ProcessFileCP;
 		Requirement OrdenarPalavras ( 6 ) {
 			Requirement OrdenaPorLetras ( 10 ) {
 			}
@@ -71,9 +105,11 @@ Requirement AnalisarPalavras ( 1 ) {
 		}
 	}
 Requirement ExibeAoUsuario ( 3 ) {
-}
+satisfied by Components.ShowTextCP;
+	}
 Requirement LeTexto ( 2 ) {
-}
+satisfied by Components.ReceiveFileCP;
+	}
 }
 Requirement OrdenaAscendente ( 7 ) {
 	derive AnalisarPalavras.Filtrar.OrdenarPalavras;
