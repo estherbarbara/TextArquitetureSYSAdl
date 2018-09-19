@@ -60,7 +60,7 @@ package  Components {
 	}
 	boundary component def ShowTextCP {
 		ports:
-		p3 : ReceiveTextIPT;
+		p5 : ReceiveTextIPT;
 	}
 	boundary component def ReceiveFileCP {
 		ports:
@@ -83,25 +83,24 @@ package  Components {
 			ShowTextCP : ShowTextCP {
 				using
 				ports:
-				p3 : ReceiveTextIPT;
+				p5 : ReceiveTextIPT;
 			}
-			ProcessTwoCP : SortCP {
+			SortCP : SortCP {
 				using
 				ports:
-				p4 : ReceiveFileIPT;
-				p5 : SendTextOPT;
+				p3 : ReceiveTextIPT;
+				p4 : SendTextOPT;
 			}
 			connectors:
 			cn0 : FileCN bindings p1 = p0;
 			cn1 : TextCN bindings p2 = p3;
-		cn3 : TextCN bindings p5 = p3;
-			cn2 : FileCN bindings p4 = p0;
+			cn2 : TextCN bindings p5 = p4;
 		}
 	}
 component def SortCP {
-		ports:
-		p4 : ReceiveFileIPT;
-		p5 : SendTextOPT;
+	ports:
+		p4 : SendTextOPT;
+		p3 : ReceiveTextIPT;
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
