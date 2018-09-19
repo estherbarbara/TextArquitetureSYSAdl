@@ -52,12 +52,11 @@ connector def FileCN {
 package  Components {
 	import Ports;
 	import Connector;
-	component def ProcessFileCP {
+	component def BreakCP {
 		ports:
 		p2 : SendTextOPT;
 		p1 : ReceiveFileIPT;
-		configuration {
-		}
+		
 	}
 	boundary component def ShowTextCP {
 		ports:
@@ -75,7 +74,7 @@ package  Components {
 				ports:
 				p0 : SendFileOPT;
 			}
-			ProcessFileCP : ProcessFileCP {
+			BreakCP : BreakCP {
 				using
 				ports:
 				p2 : SendTextOPT;
@@ -86,22 +85,36 @@ package  Components {
 				ports:
 				p3 : ReceiveTextIPT;
 			}
+			ProcessTwoCP : SortCP {
+				using
+				ports:
+				p4 : ReceiveFileIPT;
+				p5 : SendTextOPT;
+			}
 			connectors:
-			File : FileCN bindings p1 = p0;
-			Text : TextCN bindings p2 = p3;
+			cn0 : FileCN bindings p1 = p0;
+			cn1 : TextCN bindings p2 = p3;
+		cn3 : TextCN bindings p5 = p3;
+			cn2 : FileCN bindings p4 = p0;
 		}
+	}
+component def SortCP {
+		ports:
+		p4 : ReceiveFileIPT;
+		p5 : SendTextOPT;
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
 	Requirement Filtrar ( 4 ) {
-		satisfied by Components.ProcessFileCP;
 		Requirement OrdenarPalavras ( 6 ) {
+			satisfied by Components.SortCP;
 			Requirement OrdenaPorLetras ( 10 ) {
 			}
 			Requirement OrdenaPorSequeciaLetras ( 9 ) {
 			}
 		}
 		Requirement SeparaPalavras ( 5 ) {
+		satisfied by Components.BreakCP;
 		}
 	}
 Requirement ExibeAoUsuario ( 3 ) {
