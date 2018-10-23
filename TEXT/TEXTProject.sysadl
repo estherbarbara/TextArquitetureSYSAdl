@@ -52,7 +52,8 @@ connector def FileCN {
 package  Components {
 	import Ports;
 	import Connector;
-	component def BreakCP {
+	import SysADL.types;
+	component def SeparaTextoCP {
 		ports:
 		p2 : SendTextOPT;
 		p1 : ReceiveFileIPT;
@@ -74,7 +75,7 @@ package  Components {
 				ports:
 				p0 : SendFileOPT;
 			}
-			BreakCP : BreakCP {
+			BreakCP : SeparaTextoCP {
 				using
 				ports:
 				p2 : SendTextOPT;
@@ -85,7 +86,7 @@ package  Components {
 				ports:
 				p5 : ReceiveTextIPT;
 			}
-			SortCP : SortCP {
+			SortCP : OrdenaTextoCP {
 				using
 				ports:
 				p3 : ReceiveTextIPT;
@@ -97,23 +98,29 @@ package  Components {
 			cn2 : TextCN bindings p5 = p4;
 		}
 	}
-component def SortCP {
+component def OrdenaTextoCP {
 	ports:
 		p4 : SendTextOPT;
 		p3 : ReceiveTextIPT;
+	}
+activity def SeparaTextoAC ( newPin : File ) : ( newPin : String ) {
+		body {
+		}
+	}
+	activity def OrdenaTextoAC ( newPin : String ) : ( newPin : String ) {
+		body {
+		}
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
 	Requirement Filtrar ( 4 ) {
 		Requirement OrdenarPalavras ( 6 ) {
-			satisfied by Components.SortCP;
-			Requirement OrdenaPorLetras ( 10 ) {
-			}
-			Requirement OrdenaPorSequeciaLetras ( 9 ) {
-			}
+			satisfied by Components.OrdenaTextoCP;
+			
+			
 		}
 		Requirement SeparaPalavras ( 5 ) {
-		satisfied by Components.BreakCP;
+		satisfied by Components.SeparaTextoCP;
 		}
 	}
 Requirement ExibeAoUsuario ( 3 ) {
