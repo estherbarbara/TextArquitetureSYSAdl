@@ -103,13 +103,25 @@ component def OrdenaTextoCP {
 		p4 : SendTextOPT;
 		p3 : ReceiveTextIPT;
 	}
-activity def SeparaTextoAC ( newPin : File ) : ( newPin : String ) {
+activity def OrdenaTextoAC ( in2 : String ) : ( out2 : String ) {
 		body {
 		}
 	}
-	activity def OrdenaTextoAC ( newPin : String ) : ( newPin : String ) {
+	activity def DivideAC ( p3 : File ) : ( p4 : String ) {
 		body {
+			actions : LeAN : LeAN {
+				using pins : newPin : File;
+			}
+			ConverteStringAN : ConverteStringAN {
+				using pins : p2 : String;
+			}
+			delegate p3 to newPin
+			delegate p4 to ConverteStringAN flow from LeAN to p2
 		}
+	}
+	action def LeAN ( p1 : File ) : String {
+	}
+	action def ConverteStringAN ( p2 : String ) : String {
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
