@@ -29,6 +29,12 @@ port def SendFileOPT {
 	port def ReceiveTextIPT {
 		flow in String
 	}
+port def SendListTextIPT {
+		flow in String
+	}
+	port def ReceiveListTextOPT {
+		flow out String
+	}
 }
 package Connector {
 	import Ports;
@@ -47,13 +53,20 @@ connector def FileCN {
 		String from p2 to p3 connector def newElement {
 		}
 	}
+connector def ListWordCN {
+		participants:
+		~p5 : SendListTextIPT;
+		~p4 : ReceiveListTextOPT;
+		flows:
+		String from p4 to p5
+	}
 }
 
 package  Components {
 	import Ports;
 	import Connector;
 	import SysADL.types;
-	component def SeparaTextoCP {
+	component def ParticionaTextoCP {
 		ports:
 		p2 : SendTextOPT;
 		p1 : ReceiveFileIPT;
@@ -61,7 +74,7 @@ package  Components {
 	}
 	boundary component def ShowTextCP {
 		ports:
-		p5 : ReceiveTextIPT;
+		p7 : ReceiveListTextOPT;
 	}
 	boundary component def ReceiveFileCP {
 		ports:
@@ -75,7 +88,7 @@ package  Components {
 				ports:
 				p0 : SendFileOPT;
 			}
-			BreakCP : SeparaTextoCP {
+			BreakCP : ParticionaTextoCP {
 				using
 				ports:
 				p2 : SendTextOPT;
@@ -84,55 +97,62 @@ package  Components {
 			ShowTextCP : ShowTextCP {
 				using
 				ports:
-				p5 : ReceiveTextIPT;
+				p7 : ReceiveTextIPT;
 			}
-			SortCP : OrdenaTextoCP {
+			SortCP : OrdenaPalavrasCP {
 				using
 				ports:
-				p3 : ReceiveTextIPT;
-				p4 : SendTextOPT;
+				p5 : ReceiveTextIPT;
+				p6 : SendTextOPT;
 			}
 			connectors:
 			cn0 : FileCN bindings p1 = p0;
-			cn1 : TextCN bindings p2 = p3;
-			cn2 : TextCN bindings p5 = p4;
+			cn1 : TextCN bindings p2 = p5;
+			cn2 : TextCN bindings p7 = p6;
 		}
 	}
-component def OrdenaTextoCP {
+component def OrdenaPalavrasCP {
 	ports:
-		p4 : SendTextOPT;
-		p3 : ReceiveTextIPT;
+		p6 : SendListTextIPT;
+		p5 : ReceiveListTextOPT;
 	}
 activity def OrdenaTextoAC ( in2 : String ) : ( out2 : String ) {
 		body {
 		}
 	}
-	activity def DivideAC ( p3 : File ) : ( p4 : String ) {
+	activity def ParticionaTextoAC ( p3 : File ) : ( p4 : String ) {
 		body {
-			actions : LeAN : LeAN {
+			actions : LeAN : LerAN {
 				using pins : newPin : File;
 			}
-			ConverteStringAN : ConverteStringAN {
+			ConverteStringAN : ConverterStringAN {
 				using pins : p2 : String;
 			}
 			delegate p3 to newPin
 			delegate p4 to ConverteStringAN flow from LeAN to p2
 		}
 	}
-	action def LeAN ( p1 : File ) : String {
+	action def LerAN ( p1 : File ) : String {
 	}
-	action def ConverteStringAN ( p2 : String ) : String {
+	action def ConverterStringAN ( p2 : String ) : String {
+	}
+component def FiltraPalavras {
+		ports:
+		p3 : ReceiveTextIPT;
+		p4 : SendListTextIPT;
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
 	Requirement Filtrar ( 4 ) {
 		Requirement OrdenarPalavras ( 6 ) {
-			satisfied by Components.OrdenaTextoCP;
+			satisfied by Components.OrdenaPalavrasCP;
 			
 			
 		}
 		Requirement SeparaPalavras ( 5 ) {
-		satisfied by Components.SeparaTextoCP;
+		satisfied by Components.ParticionaTextoCP;
+		}
+	Requirement FiltraPalavras ( 0 ) {
 		}
 	}
 Requirement ExibeAoUsuario ( 3 ) {
