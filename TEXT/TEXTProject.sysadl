@@ -19,7 +19,7 @@ package Ports {
 		flow out String
 	}
 	
-port def SendFileOPT {
+	port def SendFileOPT {
 		flow in File
 	}
 	
@@ -29,7 +29,7 @@ port def SendFileOPT {
 	port def ReceiveTextIPT {
 		flow in String
 	}
-port def SendListTextIPT {
+	port def SendListTextIPT {
 		flow in String
 	}
 	port def ReceiveListTextOPT {
@@ -53,7 +53,7 @@ connector def FileCN {
 		String from p2 to p3 connector def newElement {
 		}
 	}
-connector def ListWordCN {
+	connector def ListTextCN {
 		participants:
 		~p5 : SendListTextIPT;
 		~p4 : ReceiveListTextOPT;
@@ -94,21 +94,32 @@ package  Components {
 				p2 : SendTextOPT;
 				p1 : ReceiveFileIPT;
 			}
+			
+			
+			FiltraPalavras : FiltraPalavras {
+				using
+				ports:
+				p3 : ReceiveTextIPT;
+				p4 : SendListTextIPT;
+			}
+			OrdenaPalavrasCP : OrdenaPalavrasCP {
+				using
+				ports:
+				p6 : SendListTextIPT;
+				p5 : ReceiveListTextOPT;
+			}
 			ShowTextCP : ShowTextCP {
 				using
 				ports:
-				p7 : ReceiveTextIPT;
-			}
-			SortCP : OrdenaPalavrasCP {
-				using
-				ports:
-				p5 : ReceiveTextIPT;
-				p6 : SendTextOPT;
+				p7 : ReceiveListTextOPT;
 			}
 			connectors:
 			cn0 : FileCN bindings p1 = p0;
-			cn1 : TextCN bindings p2 = p5;
-			cn2 : TextCN bindings p7 = p6;
+			
+			
+		cn1 : TextCN bindings p2 = p3;
+			cn2 : ListTextCN bindings p4 = p5;
+			cn3 : ListTextCN bindings p6 = p7;
 		}
 	}
 component def OrdenaPalavrasCP {
