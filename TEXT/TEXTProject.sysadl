@@ -8,8 +8,11 @@ package SysADL.types {
 	}
 	value type Void {
 	}
-	
 	datatype File {
+	}
+	datatype ListaPalavras {
+	attributes:
+		palavras : String[];
 	}
 }
 package Ports {
@@ -18,11 +21,9 @@ package Ports {
 	port def SendTextOPT {
 		flow out String
 	}
-	
 	port def SendFileOPT {
 		flow in File
 	}
-	
 	port def ReceiveFileIPT {
 		flow in File
 	}
@@ -96,7 +97,7 @@ package  Components {
 			}
 			
 			
-			FiltraPalavras : FiltraPalavras {
+			FiltraPalavras : FiltraPalavrasCP {
 				using
 				ports:
 				p3 : ReceiveTextIPT;
@@ -127,7 +128,7 @@ component def OrdenaPalavrasCP {
 		p6 : SendListTextIPT;
 		p5 : ReceiveListTextOPT;
 	}
-activity def OrdenaTextoAC ( in2 : String ) : ( out2 : String ) {
+activity def OrdenaPalavrasAC ( in2 : String ) : ( out2 : String ) {
 		body {
 		}
 	}
@@ -147,10 +148,14 @@ activity def OrdenaTextoAC ( in2 : String ) : ( out2 : String ) {
 	}
 	action def ConverterStringAN ( p2 : String ) : String {
 	}
-component def FiltraPalavras {
+component def FiltraPalavrasCP {
 		ports:
 		p3 : ReceiveTextIPT;
 		p4 : SendListTextIPT;
+	}
+activity def FiltraPalavrasAC ( textIn : String ) : ( listTextOut : String ) {
+		body {
+		}
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
@@ -164,6 +169,7 @@ Requirement AnalisarPalavras ( 1 ) {
 		satisfied by Components.ParticionaTextoCP;
 		}
 	Requirement FiltraPalavras ( 0 ) {
+		satisfied by Components.FiltraPalavrasCP;
 		}
 	}
 Requirement ExibeAoUsuario ( 3 ) {
