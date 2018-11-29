@@ -159,12 +159,22 @@ component def OrdenaPalavrasCP {
 activity def OrdenaPalavrasAC ( orderedListTextIn : ListaPalavras , inOrder :
 	AscDesc ) : ( orderedListText : ListaPalavras ) {
 		body {
-		actions : OrdenaAscAN : OrdenaAscAN {
-				using pins : p5 : ListaPalavras;
+		actions : 
+			
+		OrdenaDescAN : OrdenaDescAN {
+				using pins : p5 : AscDesc;
+				p4 : ListaPalavras;
 			}
-			OrdenaDescAN : OrdenaDescAN {
-				using pins : p4 : ListaPalavras;
+			OrdenaAscAN : OrdenaAscAN {
+				using pins : p6 : ListaPalavras;
+				p7 : AscDesc;
 			}
+			delegate inOrder to p5
+			delegate inOrder to p7
+			delegate orderedListTextIn to p4
+			delegate orderedListTextIn to p6
+			delegate orderedListText to OrdenaAscAN
+			delegate orderedListText to OrdenaDescAN
 		}
 	}
 	activity def ParticionaTextoAC ( p3 : File ) : ( p4 : String ) {
@@ -199,11 +209,11 @@ activity def FiltraPalavrasAC ( textIn : String ) : ( filteredListTextOut : List
 	}
 action def FiltrarAN ( p3 : String ) : ListaPalavras {
 	}
-	action def OrdenaDescAN ( p4 : ListaPalavras ) : ListaPalavras {
+	action def OrdenaDescAN ( p4 : ListaPalavras , p5 : AscDesc ) : ListaPalavras {
 	}
-	action def OrdenaAscAN ( p5 : ListaPalavras ) : ListaPalavras {
+	action def OrdenaAscAN ( p6 : ListaPalavras , p7 : AscDesc ) : ListaPalavras {
 	}
-component def OrdenacaoCP {
+boundary component def OrdenacaoCP {
 		ports:
 		p8 : AscDescOPT;
 	}
