@@ -14,6 +14,10 @@ package SysADL.types {
 	attributes:
 		palavras : String[];
 	}
+datatype AscDesc {
+	attributes:
+		ascendente : Boolean;
+	}
 }
 package Ports {
 	import SysADL.types;
@@ -35,6 +39,12 @@ package Ports {
 	}
 	port def ReceiveListTextOPT {
 		flow out String
+	}
+port def AscDescIPT {
+		flow in AscDesc
+	}
+	port def AscDescOPT {
+		flow out AscDesc
 	}
 }
 package Connector {
@@ -60,6 +70,13 @@ connector def FileCN {
 		~p4 : ReceiveListTextOPT;
 		flows:
 		String from p4 to p5
+	}
+connector def BooleanCN {
+		participants:
+		~p7 : AscDescIPT;
+		~p6 : AscDescOPT;
+		flows:
+		AscDesc from p6 to p7
 	}
 }
 
@@ -103,33 +120,51 @@ package  Components {
 				p3 : ReceiveTextIPT;
 				p4 : SendListTextIPT;
 			}
+			
+			ShowTextCP : ShowTextCP {
+				using
+				ports:
+				p7 : ReceiveListTextOPT;
+			}
+			OrdenacaoCP : OrdenacaoCP {
+				using
+				ports:
+				p8 : AscDescOPT;
+			}
 			OrdenaPalavrasCP : OrdenaPalavrasCP {
 				using
 				ports:
 				p6 : SendListTextIPT;
 				p5 : ReceiveListTextOPT;
-			}
-			ShowTextCP : ShowTextCP {
-				using
-				ports:
-				p7 : ReceiveListTextOPT;
+				p9 : AscDescIPT;
 			}
 			connectors:
 			cn0 : FileCN bindings p1 = p0;
 			
 			
 		cn1 : TextCN bindings p2 = p3;
+			
+			
+		cn4 : ListTextCN bindings p7 = p6;
 			cn2 : ListTextCN bindings p4 = p5;
-			cn3 : ListTextCN bindings p6 = p7;
+			cn3ector : BooleanCN bindings p8 = p9;
 		}
 	}
 component def OrdenaPalavrasCP {
 	ports:
 		p6 : SendListTextIPT;
 		p5 : ReceiveListTextOPT;
+	p9 : AscDescIPT;
 	}
-activity def OrdenaPalavrasAC ( in2 : String ) : ( out2 : String ) {
+activity def OrdenaPalavrasAC ( orderedListTextIn : ListaPalavras , inOrder :
+	AscDesc ) : ( orderedListText : ListaPalavras ) {
 		body {
+		actions : OrdenaAscAN : OrdenaAscAN {
+				using pins : p5 : ListaPalavras;
+			}
+			OrdenaDescAN : OrdenaDescAN {
+				using pins : p4 : ListaPalavras;
+			}
 		}
 	}
 	activity def ParticionaTextoAC ( p3 : File ) : ( p4 : String ) {
@@ -153,9 +188,24 @@ component def FiltraPalavrasCP {
 		p3 : ReceiveTextIPT;
 		p4 : SendListTextIPT;
 	}
-activity def FiltraPalavrasAC ( textIn : String ) : ( listTextOut : String ) {
+activity def FiltraPalavrasAC ( textIn : String ) : ( filteredListTextOut : ListaPalavras ) {
 		body {
+		actions : FiltrarAN : FiltrarAN {
+				using pins : p3 : String;
+			}
+			delegate textIn to p3
+			delegate filteredListTextOut to FiltrarAN
 		}
+	}
+action def FiltrarAN ( p3 : String ) : ListaPalavras {
+	}
+	action def OrdenaDescAN ( p4 : ListaPalavras ) : ListaPalavras {
+	}
+	action def OrdenaAscAN ( p5 : ListaPalavras ) : ListaPalavras {
+	}
+component def OrdenacaoCP {
+		ports:
+		p8 : AscDescOPT;
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
