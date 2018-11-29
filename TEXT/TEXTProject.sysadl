@@ -207,15 +207,25 @@ activity def FiltraPalavrasAC ( textIn : String ) : ( filteredListTextOut : List
 			delegate filteredListTextOut to FiltrarAN
 		}
 	}
-action def FiltrarAN ( p3 : String ) : ListaPalavras {
+	action def FiltrarAN ( p3 : String ) : ListaPalavras {
 	}
 	action def OrdenaDescAN ( p4 : ListaPalavras , p5 : AscDesc ) : ListaPalavras {
 	}
 	action def OrdenaAscAN ( p6 : ListaPalavras , p7 : AscDesc ) : ListaPalavras {
 	}
-boundary component def OrdenacaoCP {
+	boundary component def OrdenacaoCP {
 		ports:
 		p8 : AscDescOPT;
+	}
+	constraint LeEQ ( ) {
+	}
+	constraint FiltroEQ ( ) {
+	}
+	constraint ConverteEQ ( ) {
+	}
+	constraint OrdenaEQ ( p4 : ListaPalavras , p5 : AscDesc ) : ( ^out :
+	ListaPalavras ) {
+		equation = "size(p4) >= size(out)"
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
