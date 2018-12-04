@@ -147,7 +147,7 @@ package  Components {
 			
 		cn4 : ListTextCN bindings p7 = p6;
 			cn2 : ListTextCN bindings p4 = p5;
-			cn3ector : BooleanCN bindings p8 = p9;
+			cn3 : BooleanCN bindings p8 = p9;
 		}
 	}
 component def OrdenaPalavrasCP {
