@@ -58,7 +58,7 @@ connector def FileCN {
 	}
 	connector def TextCN {
 		participants:
-		~p2 : SendTextOPT;
+		~p2 : SendTextOPT [ 1, -1 ];
 		~p3 : ReceiveTextIPT;
 		flows:
 		String from p2 to p3 connector def newElement {
@@ -66,7 +66,7 @@ connector def FileCN {
 	}
 	connector def ListTextCN {
 		participants:
-		~p5 : SendListTextIPT;
+		~p5 : SendListTextIPT [ 1, -1 ];
 		~p4 : ReceiveListTextOPT;
 		flows:
 		String from p4 to p5
@@ -86,7 +86,7 @@ package  Components {
 	import SysADL.types;
 	component def ParticionaTextoCP {
 		ports:
-		p2 : SendTextOPT;
+		p2 : SendTextOPT [ 1, -1 ];
 		p1 : ReceiveFileIPT;
 		
 	}
@@ -114,12 +114,7 @@ package  Components {
 			}
 			
 			
-			FiltraPalavras : FiltraPalavrasCP {
-				using
-				ports:
-				p3 : ReceiveTextIPT;
-				p4 : SendListTextIPT;
-			}
+			
 			
 			ShowTextCP : ShowTextCP {
 				using
@@ -138,22 +133,38 @@ package  Components {
 				p5 : ReceiveListTextOPT;
 				p9 : AscDescIPT;
 			}
+			FiltraAdjetivosCP : FiltraAdjetivosCP {
+				using
+				ports:
+				p3 : ReceiveTextIPT;
+				p4 : SendListTextIPT;
+			}
+			FiltraVerbosCP : FiltraVerbosCP {
+				using
+				ports:
+				p31 : ReceiveTextIPT;
+				p41 : SendListTextIPT;
+			}
 			connectors:
 			cn0 : FileCN bindings p1 = p0;
 			
 			
-		cn1 : TextCN bindings p2 = p3;
+		
 			
 			
 		cn4 : ListTextCN bindings p7 = p6;
-			cn2 : ListTextCN bindings p4 = p5;
+			
 			cn3 : BooleanCN bindings p8 = p9;
+		cn1 : TextCN bindings p2 = p3;
+			cn11 : TextCN bindings p2 = p31;
+			cn22 : ListTextCN bindings p41 = p5;
+			cn2 : ListTextCN bindings p4 = p5;
 		}
 	}
 component def OrdenaPalavrasCP {
 	ports:
 		p6 : SendListTextIPT;
-		p5 : ReceiveListTextOPT;
+		p5 : ReceiveListTextOPT [ 1, -1 ];
 	p9 : AscDescIPT;
 	}
 activity def OrdenaPalavrasAC ( orderedListTextIn : ListaPalavras , inOrder :
@@ -193,21 +204,26 @@ activity def OrdenaPalavrasAC ( orderedListTextIn : ListaPalavras , inOrder :
 	}
 	action def ConverterStringAN ( p2 : String ) : String {
 	}
-component def FiltraPalavrasCP {
+component def FiltraAdjetivosCP {
 		ports:
 		p3 : ReceiveTextIPT;
 		p4 : SendListTextIPT;
 	}
-activity def FiltraPalavrasAC ( textIn : String ) : ( filteredListTextOut : ListaPalavras ) {
+activity def FiltraAdjetivoAC ( textIn : String ) : ( filteredListText : ListaPalavras ) {
 		body {
 		actions : FiltrarAN : FiltrarAN {
 				using pins : p3 : String;
+				filtragem : ListaPalavras;
 			}
-			delegate textIn to p3
-			delegate filteredListTextOut to FiltrarAN
+			
+			delegate  filteredListText to FiltrarAN
+			
+			delegate  textIn to p3 flow from ListaAdjetivosDicio to filtragem datastore
+			ListaAdjetivosDicio : ListaPalavras
 		}
 	}
-	action def FiltrarAN ( p3 : String ) : ListaPalavras {
+	action def FiltrarAN ( p3 : String , filtragem : ListaPalavras ) :
+	ListaPalavras {
 	}
 	action def OrdenaDescAN ( p4 : ListaPalavras , p5 : AscDesc ) : ListaPalavras {
 	}
@@ -243,6 +259,23 @@ activity def FiltraPalavrasAC ( textIn : String ) : ( filteredListTextOut : List
 	ListaPalavras ) {
 		equation = "size(e7) = size(e9)"
 	}
+component def FiltraVerbosCP {
+		ports:
+		p31 : ReceiveTextIPT;
+		p41 : SendListTextIPT;
+	}
+	activity def FiltraVerboAC ( textIn : String ) : ( filteredListText :
+	ListaPalavras ) {
+		body {
+			actions : FiltrarAN : FiltrarAN {
+				using pins : p3 : String;
+				filtragem : ListaPalavras;
+			}
+			delegate textIn to p3
+			delegate filteredListText to FiltrarAN flow from ListaVerbosDicio to
+			filtragem datastore ListaVerbosDicio : ListaPalavras
+		}
+	}
 }
 Requirement AnalisarPalavras ( 1 ) {
 	Requirement Filtrar ( 4 ) {
@@ -255,7 +288,7 @@ Requirement AnalisarPalavras ( 1 ) {
 		satisfied by Components.ParticionaTextoCP;
 		}
 	Requirement FiltraPalavras ( 0 ) {
-		satisfied by Components.FiltraPalavrasCP;
+		satisfied by Components.FiltraAdjetivosCP;
 		}
 	}
 Requirement ExibeAoUsuario ( 3 ) {
