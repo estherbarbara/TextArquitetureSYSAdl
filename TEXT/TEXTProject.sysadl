@@ -217,15 +217,31 @@ activity def FiltraPalavrasAC ( textIn : String ) : ( filteredListTextOut : List
 		ports:
 		p8 : AscDescOPT;
 	}
-	constraint LeEQ ( ) {
+	constraint PreLeEQ ( e1 : File ) : ( e2 : String ) {
+		equation = "e1 != null && e2 == '' "
 	}
-	constraint FiltroEQ ( ) {
+	constraint PosLeEQ ( e1 : File ) : ( e2 : String ) {
+		equation = "e2 != null"
 	}
-	constraint ConverteEQ ( ) {
+	constraint PreConverteEQ ( e3 : String ) : ( e4 : String ) {
+		equation = "e3 != null && e4 == '' "
 	}
-	constraint OrdenaEQ ( p4 : ListaPalavras , p5 : AscDesc ) : ( ^out :
+	constraint PosConverteEQ ( e3 : String ) : ( e4 : String ) {
+		equation = "e4 != null"
+	}
+	constraint PreFiltroEQ ( e5 : String ) : ( e6 : ListaPalavras ) {
+		equation = "e5 != null && size(e6) = 0"
+	}
+	constraint PosFiltroEQ ( e5 : String ) : ( e6 : ListaPalavras ) {
+		equation = "e6 != null && size(e6) > 0"
+	}
+	constraint PreOrdenaEQ ( e7 : ListaPalavras , e8 : AscDesc ) : ( e9 :
 	ListaPalavras ) {
-		equation = "size(p4) >= size(out)"
+		equation = " size(e7) >= 0 && e8 != null && size(e9) == 0 "
+	}
+	constraint PosOrdenaEQ ( e7 : ListaPalavras , e8 : AscDesc ) : ( e9 :
+	ListaPalavras ) {
+		equation = "size(e7) = size(e9)"
 	}
 }
 Requirement AnalisarPalavras ( 1 ) {
