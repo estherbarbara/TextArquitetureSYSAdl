@@ -94,7 +94,9 @@ package  Components {
 		p2 : SendTextOPT;
 		
 		
-	p1 : ReceiveFilesIPT [ 1, -1 ];
+	c2 : ReceiveFileIPT [ 1, -1 ];
+		c1 : ReceiveFileIPT [ 1, -1 ];
+		c0 : ReceiveFileIPT [ 1, -1 ];
 	}
 	boundary component def ShowTextCP {
 		ports:
@@ -142,18 +144,20 @@ package  Components {
 			ReceiveFileCP : ReceiveFileCP {
 				using
 				ports:
-				e1 : SendFileOPT;
-			}
-			ReceiveFileCP : ReceiveFileCP {
-				using
-				ports:
 				e2 : SendFileOPT;
 			}
 			ParticionaTextoCP : ParticionaTextoCP {
 				using
 				ports:
 				p2 : SendTextOPT;
-				p1 : ReceiveFilesIPT;
+				c2 : ReceiveFileIPT;
+				c1 : ReceiveFileIPT;
+				c0 : ReceiveFileIPT;
+			}
+			ReceiveFileCP : ReceiveFileCP {
+				using
+				ports:
+				e1 : SendFileOPT;
 			}
 			connectors:
 			
@@ -162,9 +166,9 @@ package  Components {
 			cn2 : ListTextCN bindings p4 = p5;
 			cn3 : BooleanCN bindings p8 = p9;
 		cn1 : TextCN bindings p2 = p3;
-			f1 : FileCN bindings e0 = p1;
-			f2 : FileCN bindings e1 = p1;
-			f2 : FileCN bindings e2 = p1;
+			c0 : FileCN bindings e0 = c0;
+			c1 : FileCN bindings e1 = c2;
+			c2 : FileCN bindings e2 = c1;
 		}
 	}
 component def OrdenaPalavrasCP {
