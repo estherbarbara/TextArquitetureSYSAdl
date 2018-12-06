@@ -46,6 +46,11 @@ port def AscDescIPT {
 	port def AscDescOPT {
 		flow out AscDesc
 	}
+port def ReceiveFilesIPT {
+		ports:
+		port1 : ReceiveFileIPT;
+		port2 : ReceiveFileIPT;
+	}
 }
 package Connector {
 	import Ports;
@@ -87,8 +92,9 @@ package  Components {
 	component def ParticionaTextoCP {
 		ports:
 		p2 : SendTextOPT;
-		p1 : ReceiveFileIPT;
 		
+		
+	p1 : ReceiveFilesIPT [ 1, -1 ];
 	}
 	boundary component def ShowTextCP {
 		ports:
@@ -96,7 +102,7 @@ package  Components {
 	}
 	boundary component def ReceiveFileCP {
 		ports:
-		p0 : SendFileOPT;
+		p0 : SendFileOPT [ 1, -1 ];
 	}
 	component def system {
 		configuration {
@@ -104,14 +110,9 @@ package  Components {
 			ReceiveFileCP : ReceiveFileCP {
 				using
 				ports:
-				p0 : SendFileOPT;
+				e0 : SendFileOPT [ 1, -1 ];
 			}
-			BreakCP : ParticionaTextoCP {
-				using
-				ports:
-				p2 : SendTextOPT;
-				p1 : ReceiveFileIPT;
-			}
+			
 			
 			
 			FiltraPalavras : FiltraPalavrasCP {
@@ -138,16 +139,32 @@ package  Components {
 				p5 : ReceiveListTextOPT;
 				p9 : AscDescIPT;
 			}
+			ReceiveFileCP : ReceiveFileCP {
+				using
+				ports:
+				e1 : SendFileOPT;
+			}
+			ReceiveFileCP : ReceiveFileCP {
+				using
+				ports:
+				e2 : SendFileOPT;
+			}
+			ParticionaTextoCP : ParticionaTextoCP {
+				using
+				ports:
+				p2 : SendTextOPT;
+				p1 : ReceiveFilesIPT;
+			}
 			connectors:
-			cn0 : FileCN bindings p1 = p0;
-			
-			
-		cn1 : TextCN bindings p2 = p3;
 			
 			
 		cn4 : ListTextCN bindings p7 = p6;
 			cn2 : ListTextCN bindings p4 = p5;
 			cn3 : BooleanCN bindings p8 = p9;
+		cn1 : TextCN bindings p2 = p3;
+			f1 : FileCN bindings e0 = p1;
+			f2 : FileCN bindings e1 = p1;
+			f2 : FileCN bindings e2 = p1;
 		}
 	}
 component def OrdenaPalavrasCP {
@@ -180,13 +197,16 @@ activity def OrdenaPalavrasAC ( orderedListTextIn : ListaPalavras , inOrder :
 	activity def ParticionaTextoAC ( p3 : File ) : ( p4 : String ) {
 		body {
 			actions : LeAN : LerAN {
-				using pins : newPin : File;
+				using pins : p1 : File;
 			}
 			ConverteStringAN : ConverterStringAN {
 				using pins : p2 : String;
 			}
-			delegate p3 to newPin
+			
 			delegate p4 to ConverteStringAN flow from LeAN to p2
+		flow from Files to p1
+			delegate p3 to Files databuffer Files : SysADL.types.File {
+			}
 		}
 	}
 	action def LerAN ( p1 : File ) : String {
